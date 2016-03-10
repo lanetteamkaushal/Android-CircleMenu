@@ -409,6 +409,7 @@ public class CircleLayout extends ViewGroup {
             }
             Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
             child.layout(rect.left, rect.top, rect.right, rect.bottom);
+//            child.layout(left, top, left + childWidth, top + childHeight);
             localAngle += angleDelay;
         }
     }
