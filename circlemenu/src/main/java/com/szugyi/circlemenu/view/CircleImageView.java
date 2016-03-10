@@ -19,54 +19,61 @@ package com.szugyi.circlemenu.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.szugyi.circlemenu.R;
 
 /**
- * 
  * @author Szugyi
- * Custom ImageView for the CircleLayout class.
- * Makes it possible for the image to have a name,
- * which can be displayed separately from the ImageView itself.
+ *         Custom ImageView for the CircleLayout class.
+ *         Makes it possible for the image to have a name,
+ *         which can be displayed separately from the ImageView itself.
  */
 public class CircleImageView extends ImageView {
-	// The name of the view
-	private String name;
-	
-	/**
-	 * Return the name of the view.
-	 * @return Returns the name of the view.
-	 */
-	public String getName(){
-		return name;
-	}
-	
-	/**
-	 * Set the name of the view.
-	 * @param name The name to be set for the view.
-	 */
-	public void setName(String name){
-		this.name = name;
-	}
+    // The name of the view
+    private String name;
+    private static final String TAG = "CircleImageView";
+    /**
+     * Return the name of the view.
+     *
+     * @return Returns the name of the view.
+     */
+    public String getName() {
+        return name;
+    }
 
-	public CircleImageView(Context context) {
-		this(context, null);
-	}
+    /**
+     * Set the name of the view.
+     *
+     * @param name The name to be set for the view.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public CircleImageView(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
-	}
+    public CircleImageView(Context context) {
+        this(context, null);
+    }
 
-	public CircleImageView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		if (attrs != null) {
-			TypedArray array = getContext().obtainStyledAttributes(attrs,
-					R.styleable.CircleImageView);
-			
-			this.name = array.getString(R.styleable.CircleImageView_name);
-			array.recycle();
-		}
-	}
+    public CircleImageView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
+    public CircleImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        if (attrs != null) {
+            TypedArray array = getContext().obtainStyledAttributes(attrs,
+                    R.styleable.CircleImageView);
+
+            this.name = array.getString(R.styleable.CircleImageView_name);
+            array.recycle();
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        Log.d(TAG, "onLayout() called with: " + "changed = [" + changed + "], left = [" + left + "], top = [" + top + "], right = [" + right + "], bottom = [" + bottom + "]");
+    }
 }

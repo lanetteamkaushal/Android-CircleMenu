@@ -24,7 +24,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -56,6 +58,7 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
+    private static final String TAG = "CircleLayout";
     // Event listeners
     private OnItemClickListener onItemClickListener = null;
     private OnItemSelectedListener onItemSelectedListener = null;
@@ -349,7 +352,7 @@ public class CircleLayout extends ViewGroup {
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
             float destAngle = (firstChildPosition.getAngle() - viewAngle);
-
+            Log.d(TAG, "rotateViewToCenter: " + viewAngle + ":" + destAngle);
             if (destAngle < 0) {
                 destAngle += 360;
             }
@@ -357,7 +360,7 @@ public class CircleLayout extends ViewGroup {
             if (destAngle > 180) {
                 destAngle = -1 * (360 - destAngle);
             }
-
+            Log.d(TAG, "rotateViewToCenter: " + viewAngle + ":" + destAngle);
             animateTo(angle + destAngle, 7500 / speed);
         }
     }
@@ -395,7 +398,7 @@ public class CircleLayout extends ViewGroup {
                             * Math.sin(Math.toRadians(localAngle))));
 
             child.setTag(localAngle);
-
+//            Log.d(TAG, "setChildAngles() called with: " + i + ":" + localAngle + ":" + left + ":" + top);
             float distance = Math.abs(localAngle - firstChildPosition.getAngle());
             boolean isFirstItem = distance <= halfAngle || distance >= (360 - halfAngle);
             if (isFirstItem && selectedView != child) {
@@ -404,13 +407,44 @@ public class CircleLayout extends ViewGroup {
                     onItemSelectedListener.onItemSelected(child);
                 }
             }
-
-            child.layout(left, top, left + childWidth, top + childHeight);
+            Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
+            child.layout(rect.left, rect.top, rect.right, rect.bottom);
             localAngle += angleDelay;
         }
     }
 
+    private Rect ChangeSizeOfView(int left, int top, int right, int bottom, float angle) {
+        Log.d(TAG, "ChangeSizeOfView() called with: " + "left = [" + left + "], top = [" + top + "], right = [" + right + "], bottom = [" + bottom + "], angle = [" + angle + "]");
+        Rect rect = new Rect(left, top, right, bottom);
+        int diff = rect.right - rect.left;
+        Log.d(TAG, "ChangeSizeOfView: diff+" + diff);
+        float height = diff / (360 / angle);
+        Log.d(TAG, "ChangeSizeOfView: Height :" + height);
+        float remainPadding = ((rect.bottom - rect.top) - height) / 2;
+        Log.w(TAG, "ChangeSizeOfView: Remaining padding :" + remainPadding);
+        if (angle >= 0 && angle <= 90) {
+            rect.bottom = (int) (rect.top + height);
+            rect.right = (int) (rect.left + height);
+            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+        } else if (angle > 90 && angle <= 180) {
+//            rect.top = (int) (rect.top + remainPadding);
+            rect.bottom = (int) (rect.top + height);
+            rect.left = (int) (rect.right - height);
+            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+        } else if (angle > 180 && angle <= 270) {
+            rect.top = (int) (rect.bottom - height);
+            rect.left = (int) (rect.right - height);
+            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+        } else if (angle > 270 && angle <= 360) {
+            rect.top = (int) (rect.bottom - height);
+            rect.right = (int) (rect.left + height);
+            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+        }
+        return rect;
+    }
+
     private void animateTo(float endDegree, long duration) {
+        Log.d(TAG, "animateTo() called with: " + "endDegree = [" + endDegree + "], duration = [" + duration + "]");
         if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
             return;
         }
