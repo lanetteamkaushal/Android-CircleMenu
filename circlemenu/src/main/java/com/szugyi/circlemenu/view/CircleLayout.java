@@ -408,9 +408,9 @@ public class CircleLayout extends ViewGroup {
                     onItemSelectedListener.onItemSelected(child);
                 }
             }
-            Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
-            child.layout(rect.left, rect.top, rect.right, rect.bottom);
-//            child.layout(left, top, left + childWidth, top + childHeight);
+//            Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
+//            child.layout(rect.left, rect.top, rect.right, rect.bottom);
+            child.layout(left, top, (int) (left + newWidth), (int) (top + newWidth));
             localAngle += angleDelay;
         }
     }
@@ -418,6 +418,7 @@ public class CircleLayout extends ViewGroup {
     private float calculateSize(float currentHeight, float angle) {
         float newHeight = 0;
         newHeight = (currentHeight) * (angle / 360);
+//        Log.d(TAG, "calculateSize: NewHeight" + newHeight);
         return newHeight;
     }
 
