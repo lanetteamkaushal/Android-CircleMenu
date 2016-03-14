@@ -390,13 +390,14 @@ public class CircleLayout extends ViewGroup {
 
             childWidth = child.getMeasuredWidth();
             childHeight = child.getMeasuredHeight();
+            float newWidth = calculateSize(childHeight, localAngle);
+            float newRadious = radius;// calculateRadious(localAngle, radius);
             left = Math
-                    .round((float) (((circleWidth / 2.0) - childWidth / 2.0) + radius
+                    .round((float) (((circleWidth / 2.0) - newWidth / 2.0) + newRadious
                             * Math.cos(Math.toRadians(localAngle))));
             top = Math
-                    .round((float) (((circleHeight / 2.0) - childHeight / 2.0) + radius
+                    .round((float) (((circleHeight / 2.0) - newWidth / 2.0) + newRadious
                             * Math.sin(Math.toRadians(localAngle))));
-
             child.setTag(localAngle);
 //            Log.d(TAG, "setChildAngles() called with: " + i + ":" + localAngle + ":" + left + ":" + top);
             float distance = Math.abs(localAngle - firstChildPosition.getAngle());
@@ -414,6 +415,12 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
+    private float calculateSize(float currentHeight, float angle) {
+        float newHeight = 0;
+        newHeight = (currentHeight) * (angle / 360);
+        return newHeight;
+    }
+
     private Rect ChangeSizeOfView(int left, int top, int right, int bottom, float angle) {
         Log.d(TAG, "ChangeSizeOfView() called with: " + "left = [" + left + "], top = [" + top + "], right = [" + right + "], bottom = [" + bottom + "], angle = [" + angle + "]");
         Rect rect = new Rect(left, top, right, bottom);
@@ -424,7 +431,8 @@ public class CircleLayout extends ViewGroup {
         float remainPadding = ((rect.bottom - rect.top) - height) / 2;
         Log.w(TAG, "ChangeSizeOfView: Remaining padding :" + remainPadding);
         if (angle >= 0 && angle <= 90) {
-            rect.bottom = (int) (rect.top + height);
+            rect.top = (int) (rect.top + remainPadding);
+            rect.bottom = (int) (rect.top - remainPadding);
             rect.right = (int) (rect.left + height);
             Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
         } else if (angle > 90 && angle <= 180) {
@@ -719,5 +727,14 @@ public class CircleLayout extends ViewGroup {
     public void setOnRotationFinishedListener(
             OnRotationFinishedListener onRotationFinishedListener) {
         this.onRotationFinishedListener = onRotationFinishedListener;
+    }
+
+    public float calculateRadious(float localAngle, float radius) {
+//        Log.d(TAG, "calculateRadious() called with: " + "localAngle = [" + localAngle + "], radius = [" + radius + "]");
+        float minRadious = (radius / 2);
+//        radius = radius - ((radius / 3) * (localAngle / 360));
+        radius = minRadious + (minRadious * (localAngle / 360));
+//        Log.d(TAG, "radius = [" + radius + "]");
+        return radius;
     }
 }
