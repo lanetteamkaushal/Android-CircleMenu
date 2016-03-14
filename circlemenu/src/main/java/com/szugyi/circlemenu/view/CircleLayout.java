@@ -390,7 +390,7 @@ public class CircleLayout extends ViewGroup {
 
             childWidth = child.getMeasuredWidth();
             childHeight = child.getMeasuredHeight();
-            float newWidth = calculateSize(childHeight, localAngle);
+            float newWidth = childHeight;//calculateSize(childHeight, localAngle);
             float newRadious = radius;// calculateRadious(localAngle, radius);
             left = Math
                     .round((float) (((circleWidth / 2.0) - newWidth / 2.0) + newRadious
@@ -408,9 +408,9 @@ public class CircleLayout extends ViewGroup {
                     onItemSelectedListener.onItemSelected(child);
                 }
             }
-//            Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
-//            child.layout(rect.left, rect.top, rect.right, rect.bottom);
-            child.layout(left, top, (int) (left + newWidth), (int) (top + newWidth));
+            Rect rect = ChangeSizeOfView(left, top, left + childWidth, top + childHeight, localAngle);
+            child.layout(rect.left, rect.top, rect.right, rect.bottom);
+//            child.layout(left, top, (int) (left + newWidth), (int) (top + newWidth));
             localAngle += angleDelay;
         }
     }
@@ -422,6 +422,11 @@ public class CircleLayout extends ViewGroup {
         return newHeight;
     }
 
+    float topPercent = 0;
+    float rightPercent = 0;
+    float leftPercent = 0;
+    float bottomPercent = 0;
+
     private Rect ChangeSizeOfView(int left, int top, int right, int bottom, float angle) {
         Log.d(TAG, "ChangeSizeOfView() called with: " + "left = [" + left + "], top = [" + top + "], right = [" + right + "], bottom = [" + bottom + "], angle = [" + angle + "]");
         Rect rect = new Rect(left, top, right, bottom);
@@ -431,25 +436,57 @@ public class CircleLayout extends ViewGroup {
         Log.d(TAG, "ChangeSizeOfView: Height :" + height);
         float remainPadding = ((rect.bottom - rect.top) - height) / 2;
         Log.w(TAG, "ChangeSizeOfView: Remaining padding :" + remainPadding);
+        topPercent = 0;
+        rightPercent = 0;
+        leftPercent = 0;
+        bottomPercent = 0;
         if (angle >= 0 && angle <= 90) {
-            rect.top = (int) (rect.top + remainPadding);
-            rect.bottom = (int) (rect.top - remainPadding);
-            rect.right = (int) (rect.left + height);
-            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
-        } else if (angle > 90 && angle <= 180) {
-//            rect.top = (int) (rect.top + remainPadding);
-            rect.bottom = (int) (rect.top + height);
-            rect.left = (int) (rect.right - height);
-            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
-        } else if (angle > 180 && angle <= 270) {
-            rect.top = (int) (rect.bottom - height);
-            rect.left = (int) (rect.right - height);
-            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
-        } else if (angle > 270 && angle <= 360) {
-            rect.top = (int) (rect.bottom - height);
-            rect.right = (int) (rect.left + height);
+            if (angle == 0) {
+                topPercent = 0.5f;
+                rightPercent = 1;
+                leftPercent = 0;
+                bottomPercent = 0.5f;
+            } else if (angle == 90) {
+                topPercent = 0;
+                rightPercent = 0.5f;
+                leftPercent = 0.5f;
+                bottomPercent = 1;
+            } else {
+                if (angle == 45) {
+                    topPercent = 0;
+                    rightPercent = 1;
+                    leftPercent = 0;
+                    bottomPercent = 1;
+                } else {
+                    topPercent = (float) (1 - (1 * 0.9));
+                    bottomPercent = (float) (0 + (1 * 0.9));
+                    rightPercent = (float) (0 + (1 * 0.9));
+                    leftPercent = (float) (1 - (1 * 0.9));
+                }
+            }
+            rect.top = (int) (rect.top - (remainPadding * topPercent));
+            rect.bottom = (int) (rect.bottom - (remainPadding * topPercent));
+            rect.right = (int) (rect.right + (remainPadding * rightPercent));
+            rect.left = (int) (rect.left + (remainPadding * leftPercent));
             Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
         }
+        Log.d(TAG + "_circle", "ChangeSizeOfView :TOP: " + topPercent + ":B:" + bottomPercent + ":R:" + rightPercent + ":L:" + leftPercent + ":A:" + angle);
+//        if (angle >= 0 && angle <= 90) {
+
+//        }
+//        else if (angle > 90 && angle <= 180) {
+//            rect.bottom = (int) (rect.top + height);
+//            rect.left = (int) (rect.right - height);
+//            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+//        } else if (angle > 180 && angle <= 270) {
+//            rect.top = (int) (rect.bottom - height);
+//            rect.left = (int) (rect.right - height);
+//            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+//        } else if (angle > 270 && angle <= 360) {
+//            rect.top = (int) (rect.bottom - height);
+//            rect.right = (int) (rect.left + height);
+//            Log.d(TAG, "ChangeSizeOfView: :" + rect.toString());
+//        }
         return rect;
     }
 
