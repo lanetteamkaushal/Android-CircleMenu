@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/selected_textView"
         android:layout_gravity="center_horizontal"
-        circle:circleBackground="@drawable/circle_one"
+        circle:circleBackground="@drawable/bg"
         circle:firstChildPosition="East"
         circle:isRotating="true"
         circle:speed="10">
